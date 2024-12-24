@@ -50,7 +50,6 @@ func main() {
         }
       }
     }
-    ans += checkSequenceTwo(intSeq)
   }
   
   if err := scanner.Err(); err != nil {
