@@ -10,30 +10,27 @@ import (
 
 
 
-func dfs(visited [140][140]int, grid [140][140]rune, searchWord [4]rune, i int, j int, index int, direction [2]int) int {
+func dfs(grid [140][140]rune, searchWord [4]rune, i int, j int, index int, direction [2]int) int {
   if index == 4 { 
     return 1
   }
-  if i<0 || i >= len(grid) || j < 0 || j >= len(grid[0]) ||  visited[i][j] == 1 || grid[i][j] != searchWord[index] {
+  if i<0 || i >= len(grid) || j < 0 || j >= len(grid[0]) || grid[i][j] != searchWord[index] {
     return 0
   }
-  visited[i][j] = 1
 
   dx := direction[0]
   dy := direction[1]
   newI := i+dx
   newJ := j+dy
-  if dfs(visited, grid, searchWord, newI, newJ, index+1, direction) == 1 {
+  if dfs(grid, searchWord, newI, newJ, index+1, direction) == 1 {
     return 1
   }
 
-  visited[i][j] = 0
   return 0
 }
 
 func part1(grid [140][140]rune, ans *int) {
   searchWord := [4]rune{'X', 'M', 'A', 'S'}
-  visited := [140][140]int{}
    directions := [][2]int{
     {0, 1},
     {1, 0},
@@ -48,8 +45,41 @@ func part1(grid [140][140]rune, ans *int) {
     for j := 0; j < len(grid[i]); j++ {
       if(grid[i][j] == searchWord[0]) {
         for k := 0; k < len(directions); k++ {
-          *ans += dfs(visited, grid, searchWord, i, j, 0, directions[k])
+          *ans += dfs(grid, searchWord, i, j, 0, directions[k])
         }
+      }
+    } 
+  }
+}
+
+func part2DFS(grid [140][140]rune, i int, j int) int {
+  diag := 0
+  
+  if grid[i-1][j-1] == 'M' && grid[i+1][j+1] == 'S' {
+      diag += 1
+  }
+  if grid[i-1][j-1] == 'S' && grid[i+1][j+1] == 'M' {
+      diag += 1
+  }
+
+  if grid[i-1][j+1] == 'M' && grid[i+1][j-1] == 'S' {
+      diag += 1
+  }
+  if grid[i-1][j+1] == 'S' && grid[i+1][j-1] == 'M' {
+      diag += 1
+  }
+  if diag == 2 {
+    return 1
+  }
+
+  return 0
+}
+
+func part2(grid [140][140]rune, ans *int) {
+  for i := 1; i < len(grid)-1; i++ {
+    for j := 1; j < len(grid[i])-1; j++ {
+      if(grid[i][j] == 'A') {
+        *ans += part2DFS(grid, i, j)
       }
     } 
   }
@@ -80,7 +110,8 @@ func main() {
     }
   }
 
-  part1(grid, &ans)
+  //part1(grid, &ans)
+  part2(grid, &ans)
   
 
   if err := scanner.Err(); err != nil {
